@@ -128,7 +128,6 @@ class Day2
     private static int Part2Linq(string path)
     {
         List<GameSet> games = ParseGameSets(path);
-        List<GameSet> maxGames = new();
         List<int> powers = new();
         foreach(var myId in games.Select(x=>x.Id).Distinct())
         {
