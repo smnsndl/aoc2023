@@ -14,28 +14,27 @@ class Day2
     {
         Console.WriteLine("Hello, AOC2023 Day 2!");
 
-        int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
-        Console.WriteLine(testResult);
+        // int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
+        // Console.WriteLine(testResult);
         int realInputResult = Part1("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
-        Console.WriteLine(realInputResult);
-
-        int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
-        Console.WriteLine(test2Result);
-        test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
-        Console.WriteLine(test2Result);
-
+        Console.WriteLine($"Day 2 part 1 - Result {realInputResult}");
+        //@
+        // int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
+        // Console.WriteLine(test2Result);
+        // test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
+        // Console.WriteLine(test2Result);
+        int testLinqResult = Part2Linq("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
+        Console.WriteLine($"Day 2 part 2 - Sum of all powers: {testLinqResult}");
 
     }
 
-    private static List<GameSet> GetGameSets(string path)
+    private static List<GameSet> ParseGameSets(string path)
     {
         List<GameSet> games = new();
         foreach(var game in File.ReadLines(path))
         {
-            //Console.WriteLine(game);
             string gameId = game.Split(": ")[0];
             int id = int.Parse(gameId.Replace("Game ", ""));
-            //Console.WriteLine(id);
             string[] sets = game.Replace(gameId + ": ", "").Split(";");
             foreach(var set in sets)
             {
@@ -58,7 +57,7 @@ class Day2
 
     private static int Part1(string path)
     {
-        List<GameSet> games = GetGameSets(path);
+        List<GameSet> games = ParseGameSets(path);
         var possibleSets = new HashSet<int>();
         int previousGameSetFail = 0;
         foreach(var set in games)
@@ -67,26 +66,24 @@ class Day2
             if(set.Red > limits["red"] || set.Green > limits["green"] || set.Blue > limits["blue"])
             {
                 previousGameSetFail = set.Id;
-                Console.WriteLine($"Game ID set {set.Id} outside limits" );
+                Console.WriteLine($"Game ID {set.Id} set outside limits" );
                 possibleSets.Remove(set.Id);
             }
             else
             {
-                Console.WriteLine($"Game ID set {set.Id} inside limits" );
+                Console.WriteLine($"Game ID {set.Id} set inside limits" );
                 possibleSets.Add(set.Id);
             }
         }
 
-        Console.WriteLine(string.Join(",", possibleSets));
-        Console.WriteLine();
+        //Console.WriteLine(string.Join(",", possibleSets));
+        //Console.WriteLine();
         return possibleSets.Sum();
     }
 
     private static int Part2(string path)
     {
-        List<GameSet> games = GetGameSets(path);
-        Console.WriteLine(games.Count);
-
+        List<GameSet> games = ParseGameSets(path);
         List<GameSet> maxGames = new();
         int previousId = 1;
         int maxRed = 0;
@@ -125,6 +122,26 @@ class Day2
             powers.Add(power);
 
         }
+        return powers.Sum();
+    }
+
+    private static int Part2Linq(string path)
+    {
+        List<GameSet> games = ParseGameSets(path);
+        List<GameSet> maxGames = new();
+        List<int> powers = new();
+        foreach(var myId in games.Select(x=>x.Id).Distinct())
+        {
+            // Getting minimum set of cubes per Game ID
+            var gamesWithId = games.Where(p => p.Id == myId).ToList();
+            int maxRed = gamesWithId.Max(x => x.Red);
+            int maxGreen = gamesWithId.Max(x => x.Green);
+            int maxBlue = gamesWithId.Max(x => x.Blue);
+            int rgbPower = maxRed * maxGreen * maxBlue;
+            powers.Add(rgbPower);
+            Console.WriteLine($"[{gamesWithId.Count} games with id {myId}] - Minimum set needed (RGB): {myId} {maxRed} * {maxGreen} * {maxBlue} = {rgbPower}");
+        }
+
         return powers.Sum();
     }
 
