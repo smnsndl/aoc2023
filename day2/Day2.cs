@@ -14,16 +14,16 @@ class Day2
     {
         Console.WriteLine("Hello, AOC2023 Day 2!");
 
-        // int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
+        // int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(testResult);
-        int realInputResult = Part1("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
+        int realInputResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
         Console.WriteLine($"Day 2 part 1 - Result {realInputResult}");
         //@
-        // int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_demo.txt");
+        // int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(test2Result);
-        // test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
+        // test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
         // Console.WriteLine(test2Result);
-        int testLinqResult = Part2Linq("/home/simon/Dokument/codespace/aoc2023/d2p1_input.txt");
+        int testLinqResult = Part2Linq("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
         Console.WriteLine($"Day 2 part 2 - Sum of all powers: {testLinqResult}");
 
     }
