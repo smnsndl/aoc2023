@@ -12,19 +12,19 @@ class Day2
 
     public static void Run()
     {
-        Console.WriteLine("Hello, AOC2023 Day 2!");
+        Console.WriteLine("--- Day 2: Cube Conundrum ---");
 
         // int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(testResult);
         int realInputResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
-        Console.WriteLine($"Day 2 part 1 - Result {realInputResult}");
+        Console.WriteLine($"Part 1 Silver - Result {realInputResult}");
         //@
         // int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(test2Result);
         // test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
         // Console.WriteLine(test2Result);
         int testLinqResult = Part2Linq("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
-        Console.WriteLine($"Day 2 part 2 - Sum of all powers: {testLinqResult}");
+        Console.WriteLine($"Part 2 Gold - Sum of all powers: {testLinqResult}");
 
     }
 
@@ -66,12 +66,12 @@ class Day2
             if(set.Red > limits["red"] || set.Green > limits["green"] || set.Blue > limits["blue"])
             {
                 previousGameSetFail = set.Id;
-                Console.WriteLine($"Game ID {set.Id} set outside limits" );
+                //Console.WriteLine($"Game ID {set.Id} set outside limits" );
                 possibleSets.Remove(set.Id);
             }
             else
             {
-                Console.WriteLine($"Game ID {set.Id} set inside limits" );
+                //Console.WriteLine($"Game ID {set.Id} set inside limits" );
                 possibleSets.Add(set.Id);
             }
         }
@@ -92,7 +92,7 @@ class Day2
 
         foreach(var set in games.OrderBy(q => q.Id).ToList())
         {
-            Console.WriteLine($"Current {set.Id} {set.Red} {set.Green} {set.Blue}");
+            //Console.WriteLine($"Current {set.Id} {set.Red} {set.Green} {set.Blue}");
             if(previousId != set.Id) {
                 GameSet max = new(previousId, maxRed, maxGreen, maxBlue);
                 maxGames.Add(max);
@@ -118,7 +118,7 @@ class Day2
         foreach(var game in maxGames)
         {
             int power = game.Red * game.Green * game.Blue;
-            Console.WriteLine($"{game.Id} {game.Red} {game.Green} {game.Blue} = {power}");
+            //Console.WriteLine($"{game.Id} {game.Red} {game.Green} {game.Blue} = {power}");
             powers.Add(power);
 
         }
@@ -138,7 +138,7 @@ class Day2
             int maxBlue = gamesWithId.Max(x => x.Blue);
             int rgbPower = maxRed * maxGreen * maxBlue;
             powers.Add(rgbPower);
-            Console.WriteLine($"[{gamesWithId.Count} games with id {myId}] - Minimum set needed (RGB): {myId} {maxRed} * {maxGreen} * {maxBlue} = {rgbPower}");
+            //Console.WriteLine($"[{gamesWithId.Count} games with id {myId}] - Minimum set needed (RGB): {myId} {maxRed} * {maxGreen} * {maxBlue} = {rgbPower}");
         }
 
         return powers.Sum();
