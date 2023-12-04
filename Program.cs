@@ -2,8 +2,9 @@
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
+        Day1.Run();
         Day2.Run();
         Day3.Run();
     }

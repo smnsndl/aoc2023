@@ -1,7 +1,8 @@
-namespace aoc2023;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-class Day2
+
+namespace aoc2023;
+internal class Day2
 {
 
     public static Dictionary<string, int> limits = new Dictionary<string, int>(){
@@ -13,17 +14,19 @@ class Day2
     public static void Run()
     {
         Console.WriteLine("--- Day 2: Cube Conundrum ---");
-
+        string testInput = "";
+        string input = @"C:\Users\simsun\source\repos\aoc2023\day2\d2p1_input.txt";
         // int testResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(testResult);
-        int realInputResult = Part1("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
-        Console.WriteLine($"Part 1 Silver - Result {realInputResult}");
         //@
         // int test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_demo.txt");
         // Console.WriteLine(test2Result);
         // test2Result = Part2("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
         // Console.WriteLine(test2Result);
-        int testLinqResult = Part2Linq("/home/simon/Dokument/codespace/aoc2023/day2/d2p1_input.txt");
+
+        int realInputResult = Part1(input);
+        Console.WriteLine($"Part 1 Silver - Result {realInputResult}");
+        int testLinqResult = Part2Linq(input);
         Console.WriteLine($"Part 2 Gold - Sum of all powers: {testLinqResult}");
 
     }

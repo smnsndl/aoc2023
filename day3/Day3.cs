@@ -1,21 +1,14 @@
 namespace aoc2023;
-
-class Day3
+internal class Day3
 {
 
     public static void Run()
     {
         Console.WriteLine("--- Day 3: Gear Ratios ---");
-        var example = "./day3/d3_example.txt";
-        var fullInput = "./day3/d3_input.txt";
+        var example = @"C:\Users\simsun\source\repos\aoc2023\day3\d3_example.txt";
+        var fullInput = @"C:\Users\simsun\source\repos\aoc2023\day3\d3_input.txt";
 
         var schematicLines = ParseInput(fullInput);
-
-        // Console.WriteLine($"Parsed lines");
-        // foreach(var row in schematicLines)
-        // {
-        //     Console.WriteLine(row);
-        // }
 
         var (numbers,symbols) = BuildSchematic(schematicLines);
         var part1 = SumPartNumbers(numbers,symbols);
