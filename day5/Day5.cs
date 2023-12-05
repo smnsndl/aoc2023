@@ -17,8 +17,6 @@ namespace aoc2023
             Console.WriteLine("--- Day 5: If You Give A Seed A Fertilizer ---");
             var example = @"./day5/d5_example.txt";
             var fullInput = @"./day5/d5_input.txt";
-            int part1 = 0;
-            int part2 = 0;
             var parsed = ParseInput(example);
             Console.WriteLine("Printing Parsed Input");
             Console.WriteLine($"Seeds {string.Join(",",parsed.Seeds)}");
@@ -26,13 +24,16 @@ namespace aoc2023
             {
                 Console.WriteLine($"map.key: {map.Key}\nvalues:\n\t{string.Join("\n\t",map.Value)}");
             }
+            Console.WriteLine("-----");
+            long part1 = Solve(parsed);
+            int part2 = 0;
             Console.WriteLine($"Part 1 Silver: {part1}");
             Console.WriteLine($"Part 2 Gold: {part2}");               
         }
 
         private static Almanac ParseInput(string path)
         {
-            List<int> seeds = [];
+            List<long> seeds = [];
             Dictionary<string, List<Map>> myMap = new();
             var rows = File.ReadAllLines(path);
             for (var rowId = 0; rowId < rows.Count(); rowId++)
@@ -42,8 +43,8 @@ namespace aoc2023
                 {
                     seeds = line.Replace("seeds: ","")
                         .Split(" ")
-                        .Where(x => int.TryParse(x, out int res))
-                        .Select(int.Parse)
+                        .Where(x => long.TryParse(x, out long res))
+                        .Select(long.Parse)
                         .ToList();
                 }
 
@@ -53,11 +54,11 @@ namespace aoc2023
                     var currentMapName = line.Replace(" map:","");
                     List<Map> currentMapValues = [];
                     int span = 1;
-                    while (rowId + span < rows.Count() && !String.IsNullOrEmpty(rows[rowId+span]))
+                    while (rowId + span < rows.Length && !String.IsNullOrEmpty(rows[rowId+span]))
                     {
                         var mapValues = rows[rowId+span].Split(" ")
-                            .Where(x => int.TryParse(x, out int res))
-                            .Select(int.Parse)
+                            .Where(x => long.TryParse(x, out long res))
+                            .Select(long.Parse)
                             .ToList();
                         currentMapValues.Add(
                             new Map()
@@ -76,14 +77,58 @@ namespace aoc2023
             return new Almanac(seeds, myMap);
         }
 
+        private static long Solve(Almanac input) 
+        {
+            List<List<long>> values = new();
+            foreach(var seed in input.Seeds)
+            {          
+                long currentValue = seed;
+                List<long> currentSeedValues = [seed];
+                Console.WriteLine($"Current seed {seed}");
+                foreach(KeyValuePair<string, List<Map>> map in input.Maps) 
+                {
+                    bool mapped = false;
+                    Console.WriteLine($"\tmapping {map.Key} - value {currentValue}, original seed {seed}");
+                    foreach(var currentMap in map.Value)
+                    {
+                        Console.WriteLine($"\tcurrentmap {currentMap}");
+                        var destStart = currentMap.DestinationRangeStart;
+                        var sourceStart = currentMap.SourceRangeStart;
+                        Console.WriteLine($"\t\tCalculated destStart {destStart} - sourceStart {sourceStart}");
+                        for(int x = 0; x < currentMap.RangeLength; x++)
+                        {
+                            Console.WriteLine($"\t\tSOURCE: {sourceStart} => DEST {destStart}");
+                            if (currentValue == sourceStart)
+                            {
+                                Console.WriteLine($"\t\tSeed: {seed} mapped to {map.Key}: {destStart}");
+                                currentSeedValues.Add(destStart);
+                                currentValue = destStart;
+                                mapped = true;
+                                break;
+                            }
+                            destStart+=1;
+                            sourceStart+=1;
+                        }
+                    }
+                    if(!mapped) { Console.WriteLine($"\t\tNot mapped adding {currentValue}"); currentSeedValues.Add(currentValue); }
 
+                }
+                values.Add(currentSeedValues);
+            }
+            values.ForEach(val => Console.WriteLine(string.Join(",",val)));
+            
+
+            List<long> lastValues = [];
+            values.ForEach(val => lastValues.Add(val.Last()));
+            return lastValues.Min();
+        }
     }
 
     internal class Almanac 
     {
-        public List<int> Seeds { get; set; }
+        public List<long> Seeds { get; set; }
         public Dictionary<string, List<Map>> Maps { get; set; }
-        public Almanac(List<int> seeds, Dictionary<string, List<Map>> maps)
+        public Almanac(List<long> seeds, Dictionary<string, List<Map>> maps)
         {
             this.Seeds = seeds;
             this.Maps = maps;
@@ -92,11 +137,11 @@ namespace aoc2023
 
     internal struct Map
     {
-        public int DestinationRangeStart {get;set;}
-        public int SourceRangeStart {get;set;}
-        public int RangeLength {get;set;}
+        public long DestinationRangeStart {get;set;}
+        public long SourceRangeStart {get;set;}
+        public long RangeLength {get;set;}
 
-        public Map(int drs, int srs, int rl)
+        public Map(long drs, long srs, long rl)
         {
             DestinationRangeStart = drs;
             SourceRangeStart = srs;
