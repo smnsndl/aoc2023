@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -24,52 +26,71 @@ namespace aoc2023
             Console.WriteLine("Printing Parsed Input");
 
             Console.WriteLine($"TIME {string.Join(",", parsed)}");
+            ulong part1 = SolvePart1(parsed);
+            Console.WriteLine($"Part 1 Silver: {part1}");
 
-            var myBoat = new Boat(); 
-            List<int> AllRacesAndWaysThatICanWin= [];
-            for(int x = 0; x < parsed.Count; x++)
+            var newRace = Merger(parsed);
+            Console.WriteLine(newRace.Time);
+            Console.WriteLine(newRace.Distance);
+            ulong part2 = SolvePart2(newRace);
+            Console.WriteLine($"Part 2 Gold: {part2}");
+        }
+
+        private static ulong SolvePart1(List<Race> parsed)
+        {
+            var myBoat = new Boat();
+            List<ulong> AllRacesAndWaysThatICanWin = [];
+            for (ulong x = 0; (int)x < parsed.Count; x++)
             {
-                List<int> SpeedsThatICanWin= [];
-                Console.WriteLine($"time {parsed[x].Time} dist {parsed[x].Distance}");
-                int timeLeftRace = parsed[x].Time;
-                for(int dist = 0; dist < parsed[x].Distance; dist++)
+                List<ulong> SpeedsThatICanWin = [];
+                Console.WriteLine($"time {parsed[(int)x].Time} dist {parsed[(int)x].Distance}");
+                ulong timeLeftRace = parsed[(int)x].Time;
+                for (ulong dist = 0; dist < parsed[(int)x].Distance; dist++)
                 {
-                    if(timeLeftRace <= 0) { break; }
+                    if (timeLeftRace <= 0) { break; }
                     myBoat.ChargeButton(dist);
                     //Console.WriteLine($"Holding button and charging : {myBoat.TravelSpeed}");
-                    timeLeftRace = parsed[x].Time - myBoat.TravelSpeed;
+                    timeLeftRace = parsed[(int)x].Time - myBoat.TravelSpeed;
                     //Console.WriteLine($"time left on race: {timeLeftRace}");
-                    if(myBoat.TravelSpeed*timeLeftRace > parsed[x].Distance)
+                    if (timeLeftRace * myBoat.TravelSpeed > parsed[(int)x].Distance)
                     {
                         Console.WriteLine($"\tA winning travelspeed: {myBoat.TravelSpeed}, timeleft: {timeLeftRace}!!");
                         SpeedsThatICanWin.Add(myBoat.TravelSpeed);
                     }
                 }
                 Console.WriteLine($"How many ways to win: {SpeedsThatICanWin.Count}");
-                AllRacesAndWaysThatICanWin.Add(SpeedsThatICanWin.Count);
+                AllRacesAndWaysThatICanWin.Add((ulong)SpeedsThatICanWin.Count);
             }
-            AllRacesAndWaysThatICanWin.ForEach(Console.WriteLine); 
-            
+            AllRacesAndWaysThatICanWin.ForEach(Console.WriteLine);
+
             Console.WriteLine("-----");
-            double mathPow = AllRacesAndWaysThatICanWin[0];
-            for(var val = 1; val < AllRacesAndWaysThatICanWin.Count; val++)
+            ulong mathPow = AllRacesAndWaysThatICanWin[0];
+            for (var val = 1; val < AllRacesAndWaysThatICanWin.Count; val++)
             {
-                Console.WriteLine($"Math powwing {mathPow} {AllRacesAndWaysThatICanWin[val]}={mathPow*AllRacesAndWaysThatICanWin[val]}");
-                mathPow = mathPow*AllRacesAndWaysThatICanWin[val];
+                Console.WriteLine($"Math powwing {mathPow} {AllRacesAndWaysThatICanWin[val]}={mathPow * AllRacesAndWaysThatICanWin[val]}");
+                mathPow = mathPow * AllRacesAndWaysThatICanWin[val];
             }
+            return mathPow;
+        }
 
-            double part1 = mathPow;// SolvePart1(parsed);
-            Console.WriteLine($"Part 1 Silver: {part1}");
+        private static ulong SolvePart2(Race newRace)
+        {
+            ulong wins = 0;
+            for(ulong i = 0; i < newRace.Time + 1; i++)
+                if (CalculateDistance(i, newRace.Time - i) > newRace.Distance)
+                    wins++;
+            return wins;
+        }
 
-
-            ulong part2 = 0;
-            Console.WriteLine($"Part 2 Gold: {part2}");
+        private static ulong CalculateDistance(ulong held, ulong remaining)
+        {
+            return remaining * held;
         }
 
         private static List<Race> ParseInput(string input)
         {
-            List<int> TimeValues = [];
-            List<int> DistanceValues = [];
+            List<ulong> TimeValues = [];
+            List<ulong> DistanceValues = [];
             List<Race> races = [];
             foreach(var row in File.ReadLines(input))
             {
@@ -78,8 +99,8 @@ namespace aoc2023
                     //Console.WriteLine("TIME ");
                     foreach(var x in row.Split(" ").ToList())
                     {
-                        int number;
-                        bool success = int.TryParse(x, out number);
+                        ulong number;
+                        bool success = ulong.TryParse(x, out number);
                         if (success)
                         {
                             //Console.WriteLine($"Converted '{x}' to {number}.");
@@ -92,8 +113,8 @@ namespace aoc2023
                     //Console.WriteLine("DISTANCE ");
                     foreach(var x in row.Split(" ").ToList())
                     {
-                        int number;
-                        bool success = int.TryParse(x, out number);
+                        ulong number;
+                        bool success = ulong.TryParse(x, out number);
                         if (success)
                         {
                             //Console.WriteLine($"Converted '{x}' to {number}.");
@@ -104,20 +125,36 @@ namespace aoc2023
             }
             if(TimeValues.Count == DistanceValues.Count)
             {
-                for(int x = 0; x < TimeValues.Count; x++)
+                for(ulong x = 0; (int) x < TimeValues.Count; x++)
                 {
-                    races.Add(new Race(TimeValues[x], DistanceValues[x]));
+                    races.Add(new Race(TimeValues[(int)x], DistanceValues[(int)x]));
                 }
             }
             return races;
         }
+
+        private static Race Merger(List<Race> races)
+        {
+            string newTime = "";
+            string newDistance = "";
+
+            foreach (var race in races)
+            {
+                newTime += race.Time;
+                newDistance += race.Distance;
+            }
+ 
+            return new(ulong.Parse(newTime), ulong.Parse(newDistance));
+        }
     }
+
+
 
     internal class Race
     {
-        public int Time {get;set;} = 0;
-        public int Distance {get;set;} = 0;
-        public Race(int time, int distance)
+        public ulong Time {get;set;} = 0;
+        public ulong Distance {get;set;} = 0;
+        public Race(ulong time, ulong distance)
         {
             Time = time;
             Distance = distance;
@@ -126,16 +163,17 @@ namespace aoc2023
 
     internal class Boat
     {
-        public int TravelSpeed {get;set;} = 0;
+        public ulong TravelSpeed {get; set;} = 0;
 
-        public int ChargeButton(int howLong)
+        public ulong ChargeButton(ulong howLong)
         {
             TravelSpeed = 0;
-            for(int x = 0; x < howLong; x++)
+            for(ulong x = 0; x < howLong; x++)
             {
                 TravelSpeed += 1;
             };
             return TravelSpeed;
         }
+
     }
 }
